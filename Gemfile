@@ -1,1 +1,3 @@
-gem "active_sierra_models", path: "~/development/gems/active_sierra_models"
+source 'https://rubygems.org'
+
+gem "active_sierra_models"
