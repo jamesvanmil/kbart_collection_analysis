@@ -1,2 +1,3 @@
 config/database.yml
+kbart_reports/*
 Gemfile.lock
