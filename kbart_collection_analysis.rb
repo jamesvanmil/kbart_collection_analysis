@@ -19,7 +19,7 @@ def issn_index
     end
   end
 
-  issn_fields = VarfieldView.marc_tag("022").record_type_code("b").limit(1000)
+  issn_fields = VarfieldView.marc_tag("022").record_type_code("b").limit(100)
   issn_fields.each do |field| 
     field.subfields.tag("a").each { |a| hash_setter(field.record_num, a.content) }
     field.subfields.tag("y").each { |y| hash_setter(field.record_num, y.content) }
@@ -27,8 +27,14 @@ def issn_index
   end
 end
 
-def get_volumes(bib_number)
-  BibView.where("record_num = ?", bib_number)[0].item_views { |item| puts item.varfield_views.varfield_type_code("v").field_content }
+def item_field_by_tag(item_number, tag)
+  item = ItemView.where("record_num = ?", item_number)
+  item[0].varfield_views.varfield_type_code(tag).collect { |f| f.field_content }
+end
+
+def items_by_bib(bib_number)
+  bib = BibView.where("record_num = ?", bib_number)
+  bib[0].item_views.collect { |i| i.record_num }
 end
 
 class KBART
@@ -57,15 +63,15 @@ class KBART
 end
 
 issn_index
-puts @issn_hash
 
 kbart = CSV.read(ARGV[0], col_sep: "\t", headers: :first_row)
 
 kbart.each do |row|
-  bib_records = Array.new
   holding = KBART.new(row, @issn_hash)
-
   next if holding.bib_records.length == 0
 
-  holding.bib_records.each { |bib| get_volumes(bib) }
+  holding.bib_records.each do |bib|
+    items_by_bib(bib).each { |item| puts "i#{item}a\t#{item_field_by_tag(item, "v")}\t#{item_field_by_tag(item, "c")}\t#{holding.title}\t#{BibView.where("record_num = ?", bib)[0].title}" }
+  end
+    
 end
