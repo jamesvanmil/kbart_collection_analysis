@@ -27,16 +27,6 @@ def issn_index
   end
 end
 
-def item_field_by_tag(item_number, tag)
-  item = ItemView.where("record_num = ?", item_number)
-  item[0].varfield_views.varfield_type_code(tag).collect { |f| f.field_content }
-end
-
-def items_by_bib(bib_number)
-  bib = BibView.where("record_num = ?", bib_number)
-  bib[0].item_views.collect { |i| i.record_num }
-end
-
 class KBART
   'Accept KBART row and extract useful information - accepts row of CSV data loaded with headers'
   attr_accessor :title, :issns, :begin_date, :end_date, :url, :collection, :bib_records
@@ -62,6 +52,18 @@ class KBART
   end
 end
 
+class Item
+  'Accept ItemView object and create object with all of the information we will need for comparison'
+  attr_accessor :item_number, :volumes, :call_numbers, :begin_date, :end_date, :location
+
+  def initialize(item_view)
+    @item_number = item_view.record_num
+    @volumes = item_view.varfield_views.varfield_type_code("v").collect { |f| f.field_content }
+    @call_numbers = item_view.varfield_views.varfield_type_code("c").collect { |f| f.field_content }
+    @location = item_view.location_code
+  end
+end
+
 issn_index
 
 kbart = CSV.read(ARGV[0], col_sep: "\t", headers: :first_row)
@@ -70,8 +72,11 @@ kbart.each do |row|
   holding = KBART.new(row, @issn_hash)
   next if holding.bib_records.length == 0
 
-  holding.bib_records.each do |bib|
-    items_by_bib(bib).each { |item| puts "i#{item}a\t#{item_field_by_tag(item, "v")}\t#{item_field_by_tag(item, "c")}\t#{holding.title}\t#{BibView.where("record_num = ?", bib)[0].title}" }
+  holding.bib_records.each do |bib_number|
+    b = BibView.where("record_num = ?", bib_number).first
+    bib_title = b.title
+    items = b.item_views.collect { |i| Item.new(i) }
+    items.each { |i| puts i.item_number, i.volumes }
   end
     
 end
