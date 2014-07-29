@@ -29,8 +29,9 @@ kbart.each do |row|
     items.each do |i|
       next unless i.location =~ /^u/
       next if i.location == 'uint'
+      next if i.status == 'w'
       next unless i.supression == "-"
-      puts "#{holding.within_holdings?(i.dates)}\t#{bib_title}\t#{holding.title}\t#{title_comparison}\ti#{i.item_number}a\t#{i.location}\t#{i.call_number}\t#{i.volume}\t#{holding.collection}\t#{holding.begin_date.year}-#{holding.end_date.year}"
+      puts "#{holding.within_holdings?(i.dates)}\t#{bib_title}\t#{holding.title}\t#{title_comparison}\ti#{i.item_number}a\t#{i.location}\t#{i.call_number}\t#{i.volume}\t#{i.note}\t#{holding.collection}\t#{holding.begin_date.year}-#{holding.end_date.year}"
     end
   end
     

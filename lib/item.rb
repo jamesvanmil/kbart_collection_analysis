@@ -2,7 +2,7 @@ class Item
   require 'date'
   require 'active_sierra_models'
   ## Accept ItemView object and create object with all of the information we will need for comparison
-  attr_accessor :item_number, :volume, :call_number, :dates, :location, :status, :supression
+  attr_accessor :item_number, :volume, :call_number, :dates, :location, :status, :supression, :note
 
   def initialize(item_view)
     @item_number = item_view.record_num
@@ -12,6 +12,7 @@ class Item
     @status = item_view.item_status_code
     @supression = item_view.icode2
     @dates = date_parser(volume)
+    @note = note_parser(item_view)
   end
 
   private
@@ -27,6 +28,11 @@ class Item
     call_numbers = item_view.varfield_views.varfield_type_code("c").collect { |f| f.field_content }
     call_numbers[0]
   end
+
+  def note_parser(item_view)
+    ##Concatenate all notes into one field
+    notes = item_view.varfield_views.varfield_type_code("x").collect { |f| f.field_content }
+    notes.join("; ")
 
   def date_parser(volume)
     ## Parsing attempt #1: (YYYY), (YYYY/YY), (YYYY/YYYY)
