@@ -57,14 +57,19 @@ class Item
       end
       return [volume_begin, volume_end]
     end
-=begin
+
     ## Parsing attempt #3: (YYYY:Mon.), (YYYY:Mon./Mon.)
-    date_matches = /\((\d\d\d\d):([AZaz]+\.?)[-\\\/]?([AZaz]+\.?)?/.match(volume)
+    date_matches = /\((\d\d\d\d):([AZaz]+\.?)[-\\\/]?([AZaz]+\.?)?\)/.match(volume)
     unless date_matches.nil?
-      volume_begin = Date.strptime(date_matches[1], '%Y')
-      if date_matches.
+      volume_begin = Date.parse("#{date_matches[2]} #{date_matches[1]})"    
+      if date_matches[3].nil?
+        volume_end = volume_begin
+      else
+        volume_end = Date.parse("#{date_matches[3]} #{date_matches[1]})"    
+      end
+      return [volume_begin, volume_end]
     end
-=end
+
    return [nil, nil] 
   end
 end
