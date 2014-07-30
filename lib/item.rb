@@ -46,7 +46,7 @@ class Item
       if date_matches[3].nil?
         volume_end = Date.strptime(date_matches[1] + date_matches[2], '%Y')
       elsif date_matches[4].nil?
-        increment = true if date_matches[3].to_i < date_matches[2].to_i
+        increment = true if date_matches[3].to_i > date_matches[2].to_i
         if increment
           volume_end = Date.strptime((date_matches[1].to_i + 1).to_s + date_matches[3], '%Y')
         else
@@ -59,7 +59,7 @@ class Item
     end
 
     ## Parsing attempt #3: (YYYY:Mon.), (YYYY:Mon./Mon.)
-    date_matches = /\((\d\d\d\d):([AZaz]+\.?)[-\\\/]?([AZaz]+\.?)?\)/.match(volume)
+    date_matches = /\((\d\d\d\d):([A-Za-z]+\.?)[-\\\/]?([A-Za-z]+\.?)?\)/.match(volume)
     unless date_matches.nil?
       volume_begin = Date.parse("#{date_matches[2]} #{date_matches[1]})"    
       if date_matches[3].nil?
@@ -70,6 +70,23 @@ class Item
       return [volume_begin, volume_end]
     end
 
-   return [nil, nil] 
+    ## Parsing attempt #4: (YYYY:Mon./YYYY:Mon.)
+    date_matches =  /\((\d\d)(\d\d):([A-Za-z]+\.?)[-\\\/](\d\d)(\d\d)?:([A-Za-z]+\.?)\)/.match(volume)
+    unless date_matches.nil?
+      volume_begin = Date.parse("#{date_matches[3]} #{date_matches[1]+date_matches[2]}")
+      if date_matches[5].nil?
+        increment = true if date_matches[4].to_i > date_matches[2].to_i
+        if increment
+          volume_end = Date.parse("#{date_matches[6]} #{(date_matches[1].to_i + 1).to_s + date_matches[4]}")
+        else
+          volume_end = Date.parse("#{date_matches[6]} #{date_matches[1] + date_matches[4]}")
+        end
+      else
+        volume_end = Date.parse("#{date_matches[6]} #{date_matches[4] + date_matches[5]}")
+      end
+      return [volume_begin, volume_end]
+    end
+
+    return [nil, nil] 
   end
 end
