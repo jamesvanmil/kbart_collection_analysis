@@ -31,6 +31,7 @@ kbart.each do |row|
       next if i.location == 'uint'
       next if i.status == 'w'
       next unless i.supression == "-"
+      puts "Overlap?\tTitle from Sierra\tTitle from holdings\tTitle ratio\tItem #\tItem\tCall #\tVolume\tNote\tHoldings collection\tHoldings begin\tHoldings end"
       puts "#{holding.within_holdings?(i.dates)}\t#{bib_title}\t#{holding.title}\t#{title_comparison}\ti#{i.item_number}a\t#{i.location}\t#{i.call_number}\t#{i.volume}\t#{i.note}\t#{holding.collection}\t#{holding.begin_date.year}-#{holding.end_date.year}"
     end
   end

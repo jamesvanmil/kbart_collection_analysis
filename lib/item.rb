@@ -25,7 +25,7 @@ class Item
 
   def call_number_parser(item_view)
     ## Assume there is only one call number
-    call_numbers = item_view.varfield_views.varfield_type_code("c").collect { |f| f.field_content }
+    call_numbers = item_view.varfield_views.varfield_type_code("c").collect { |f| f.clean }
     call_numbers[0]
   end
 
