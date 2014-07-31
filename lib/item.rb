@@ -33,6 +33,7 @@ class Item
     ##Concatenate all notes into one field
     notes = item_view.varfield_views.varfield_type_code("x").collect { |f| f.field_content }
     notes.join("; ")
+  end
 
   def date_parser(volume)
     ## Parsing attempt #1: (YYYY), (YYYY/YY), (YYYY/YYYY)
@@ -59,13 +60,14 @@ class Item
     end
 
     ## Parsing attempt #3: (YYYY:Mon.), (YYYY:Mon./Mon.)
-    date_matches = /\((\d\d\d\d):([A-Za-z]+\.?)[-\\\/]?([A-Za-z]+\.?)?\)/.match(volume)
+    date_matches = /\((\d\d\d\d):((?:Jan\w*)(?:Feb\w*)(?:Mar\w*)(?:Apr\w*)(?:May\w*)(?:Jun\w*)(?:Jul\w*)(?:Aug\w*)(?:Sep\w*)(?:Oct\w*)(?:Nov\w*)(?:Dec\w*)\.?)[-\\\/]?((?:Jan\w*)(?:Feb\w*)(?:Mar\w*)(?:Apr\w*)(?:May\w*)(?:Jun\w*)(?:Jul\w*)(?:Aug\w*)(?:Sep\w*)(?:Oct\w*)(?:Nov\w*)(?:Dec\w*)\.?)?\)/.match(volume)
     unless date_matches.nil?
-      volume_begin = Date.parse("#{date_matches[2]} #{date_matches[1]})"    
+      puts volume, date_matches
+      volume_begin = Date.parse("#{date_matches[2]} #{date_matches[1]}")
       if date_matches[3].nil?
         volume_end = volume_begin
       else
-        volume_end = Date.parse("#{date_matches[3]} #{date_matches[1]})"    
+        volume_end = Date.parse("#{date_matches[3]} #{date_matches[1]}")
       end
       return [volume_begin, volume_end]
     end
@@ -87,6 +89,7 @@ class Item
       return [volume_begin, volume_end]
     end
 
-    return [nil, nil] 
+    [nil, nil]
   end
+
 end
