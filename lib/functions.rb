@@ -15,7 +15,7 @@ def issn_index
     end
   end
 
-  issn_fields = VarfieldView.marc_tag("022").record_type_code("b").limit(1000)
+  issn_fields = VarfieldView.marc_tag("022").record_type_code("b")
   issn_fields.each do |field| 
     field.subfields.tag("a").each { |a| hash_setter(field.record_num, a.content) }
     field.subfields.tag("y").each { |y| hash_setter(field.record_num, y.content) }
