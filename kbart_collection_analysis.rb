@@ -12,7 +12,7 @@ distance = FuzzyStringMatch::JaroWinkler.create( :pure )
 
 kbart = CSV.read(ARGV[0], col_sep: "\t", headers: :first_row)
 
-puts "Overlap?\tTitle from Sierra\tTitle from holdings\tTitle ratio\tItem #\tItem\tCall #\tVolume\tNote\tHoldings collection\tHoldings begin\tHoldings end"
+puts "Overlap?\tTitle from Sierra\tTitle from holdings\tTitle ratio\tItem #\tItem\tCall #\tVolume\tNote\tHoldings collection\tHoldings"
 
 kbart.each do |row|
   holding = KBART.new(row, @issn_hash)
