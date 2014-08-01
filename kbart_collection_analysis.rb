@@ -12,7 +12,7 @@ distance = FuzzyStringMatch::JaroWinkler.create( :pure )
 
 kbart = CSV.read(ARGV[0], col_sep: "\t", headers: :first_row)
 
-puts "Overlap?\tTitle from Sierra\tTitle from holdings\tTitle ratio\tItem #\tItem\tCall #\tVolume\tNote\tHoldings collection\tHoldings"
+puts "Overlap?\tTitle from Sierra\tTitle from holdings\tTitle ratio\tItem #\tstatus\tLocation\tCall #\tVolume\tNote\tHoldings collection\tHoldings"
 
 kbart.each do |row|
   holding = KBART.new(row, @issn_hash)
@@ -33,7 +33,7 @@ kbart.each do |row|
       next if i.location == 'uint'
       next if i.status == 'w'
       next unless i.supression == "-"
-      puts "#{holding.within_holdings?(i.dates)}\t#{bib_title}\t#{holding.title}\t#{title_comparison}\ti#{i.item_number}a\t#{i.location}\t#{i.call_number}\t#{i.volume}\t#{i.note}\t#{holding.collection}\t#{holding.begin_date.year}-#{holding.end_date.year}"
+      puts "#{holding.within_holdings?(i.dates)}\t#{bib_title}\t#{holding.title}\t#{title_comparison}\ti#{i.item_number}a\t#{i.status}\t#{i.location}\t#{i.call_number}\t#{i.volume}\t#{i.note}\t#{holding.collection}\t#{holding.begin_date.year}-#{holding.end_date.year}"
     end
   end
     
